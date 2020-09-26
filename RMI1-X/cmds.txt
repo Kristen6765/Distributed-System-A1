@@ -1,0 +1,12 @@
+#either
+cd /home/2013/jdsilv2/MyWorkshop/512/RMI1-X/Server
+rmiregistry 3090 &
+
+#or (from any directory)
+CLASSPATH=/home/2013/jdsilv2/MyWorkshop/512/RMI1-X/Server rmiregistry 3090 &
+
+java   -Djava.security.policy=/home/2013/jdsilv2/MyWorkshop/512/RMI1-X/Server/security.policy    AccountImpl  3090
+
+# Client side commands (rmiregistry is not required on the client side)
+
+java -Djava.security.policy=/home/2013/jdsilv2/MyWorkshop/512/RMI1-X/Client/security.policy  Client teach-vw1 3090

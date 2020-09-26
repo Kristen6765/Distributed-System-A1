@@ -1,0 +1,3 @@
+java   -Djava.security.policy=/home/2013/jdsilv2/MyWorkshop/512/RMI1/Server/security.policy    AccountImpl  3090
+
+java -Djava.security.policy=/home/2013/jdsilv2/MyWorkshop/512/RMI1/Client/security.policy  Client teach-vw1 3090
