@@ -42,17 +42,17 @@ public class ResourceManager implements IResourceManager
 		m_name = p_name;
 	
 				try {
-				// 	Registry carRegistry = LocateRegistry.getRegistry("localhost", server_port_car);
-                //     carRM = (IResourceManager) carRegistry.lookup(m_rmiPrefix + "Resources");
-                //    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
-                //     if (carRM == null)
-                //         throw new AssertionError();
-
-					Registry roomRegistry = LocateRegistry.getRegistry("localhost", server_port_room);
-                    roomRM = (IResourceManager) roomRegistry.lookup(m_rmiPrefix + "Resources");
+					Registry carRegistry = LocateRegistry.getRegistry("localhost", server_port_car);
+                    carRM = (IResourceManager) carRegistry.lookup(m_rmiPrefix + "Resources");
                    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
-                    if (roomRM == null)
+                    if (carRM == null)
                         throw new AssertionError();
+
+				// 	Registry roomRegistry = LocateRegistry.getRegistry("localhost", server_port_room);
+                //     roomRM = (IResourceManager) roomRegistry.lookup(m_rmiPrefix + "Resources");
+                //    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
+                //     if (roomRM == null)
+                //         throw new AssertionError();
 	
 				//  Registry flightRegistry = LocateRegistry.getRegistry("localhost", server_port_flight);
                 //     flightRM = (IResourceManager) flightRegistry.lookup(m_rmiPrefix + "Resources");
