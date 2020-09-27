@@ -3,7 +3,7 @@
 // CSE 593
 // -------------------------------
 
-package Server.Common;
+package Server.RMI;
 
 import Server.Interface.*;
 
@@ -17,7 +17,11 @@ import java.rmi.registry.Registry;
 import java.rmi.RemoteException;
 import java.rmi.NotBoundException;
 
-public class ResourceManager implements IResourceManager
+
+import Server.Common.*;
+import java.rmi.server.UnicastRemoteObject;
+
+public class RMIMiddleware implements IResourceManager
 {
 	
     private static String m_serverName ="Middleware";
@@ -37,25 +41,82 @@ public class ResourceManager implements IResourceManager
 	protected String m_name = "";
 	protected RMHashMap m_data = new RMHashMap();
 
-	public ResourceManager(String p_name)
+    private static String s_serverName = "Server";
+	//TODO: ADD YOUR GROUP NUMBER TO COMPLETE
+	private static String s_rmiPrefix = "group_24_";
+
+	public static void main(String args[])
+	{
+		if (args.length > 0)
+		{
+			s_serverName = args[3];
+		}
+			
+		// Create the RMI server entry
+		try {
+			// Create a new Server object
+			RMIMiddleware server = new RMIMiddleware(s_serverName);
+
+			// Dynamically generate the stub (client proxy)
+			IResourceManager resourceManager = (IResourceManager)UnicastRemoteObject.exportObject(server, 0);
+
+			// Bind the remote object's stub in the registry
+			Registry l_registry;
+			try {
+				l_registry = LocateRegistry.createRegistry(3024);
+			} catch (RemoteException e) {
+				l_registry = LocateRegistry.getRegistry(3024);
+			}
+			final Registry registry = l_registry;
+			registry.rebind(s_rmiPrefix + s_serverName, resourceManager);
+
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						registry.unbind(s_rmiPrefix + s_serverName);
+						System.out.println("'" + s_serverName + "' resource manager unbound");
+					}
+					catch(Exception e) {
+						System.err.println((char)27 + "[31;1mServer exception: " + (char)27 + "[0mUncaught exception");
+						e.printStackTrace();
+					}
+				}
+			});                                       
+			System.out.println("'" + s_serverName + "' resource manager server ready and bound to '" + s_rmiPrefix + s_serverName + "'");
+		}
+		catch (Exception e) {
+			System.err.println((char)27 + "[31;1mServer exception: " + (char)27 + "[0mUncaught exception");
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		// Create and install a security manager
+		if (System.getSecurityManager() == null)
+		{
+			System.setSecurityManager(new SecurityManager());
+		}
+	}
+
+
+	public RMIMiddleware(String p_name)
 	{
 		m_name = p_name;
 	
 				try {
 					Registry carRegistry = LocateRegistry.getRegistry("localhost", server_port_car);
-                    carRM = (IResourceManager) carRegistry.lookup(m_rmiPrefix + "Resources");
+                    carRM = (IResourceManager) carRegistry.lookup(m_rmiPrefix + "Cars");
                    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
                     if (carRM == null)
                         throw new AssertionError();
 
 					Registry roomRegistry = LocateRegistry.getRegistry("localhost", server_port_room);
-                    roomRM = (IResourceManager) roomRegistry.lookup(m_rmiPrefix + "Resources");
+                    roomRM = (IResourceManager) roomRegistry.lookup(m_rmiPrefix + "Rooms");
                    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
                     if (roomRM == null)
                         throw new AssertionError();
 	
 					Registry flightRegistry = LocateRegistry.getRegistry("localhost", server_port_flight);
-                    flightRM = (IResourceManager) flightRegistry.lookup(m_rmiPrefix + "Resources");
+                    flightRM = (IResourceManager) flightRegistry.lookup(m_rmiPrefix + "Flights");
                    // System.out.println("Connected to '" +"Cars"  + "' server [" + args[1] + ":" + server_port + "/" + s_rmiPrefix + name + "]");
                     if (flightRM == null)
                         throw new AssertionError();
@@ -68,8 +129,6 @@ public class ResourceManager implements IResourceManager
 				catch (NotBoundException|RemoteException e) {
 					System.out.println(e);
 				}
-			
-		
 	}
 
 
@@ -456,3 +515,7 @@ public class ResourceManager implements IResourceManager
 	}
 }
  
+
+
+
+
