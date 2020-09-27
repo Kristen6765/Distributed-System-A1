@@ -21,7 +21,7 @@ import java.rmi.NotBoundException;
 import Server.Common.*;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RMIMiddleware implements IResourceManager
+public class RMIMiddleware extends ResourceManager
 {
 	
     private static String m_serverName ="Middleware";
@@ -100,6 +100,7 @@ public class RMIMiddleware implements IResourceManager
 
 	public RMIMiddleware(String p_name)
 	{
+		super(p_name);
 		m_name = p_name;
 	
 				try {
@@ -324,15 +325,19 @@ public class RMIMiddleware implements IResourceManager
 
   @Override
   public int newCustomer(int id) throws RemoteException {
-    int cid = Collections.max(customerIdx);
-    this.newCustomer(id, cid);
+    int cid = super.newCustomer(id);
+    flightRM.newCustomer(id, cid);
+    carRM.newCustomer(id, cid);
+    roomRM.newCustomer(id, cid);
+    //int cid = Collections.max(customerIdx);
+    //this.newCustomer(id, cid);
     return cid;
   }
 
   @Override
   public boolean newCustomer(int id, int cid) throws RemoteException {
-    this.customerIdx.add(cid);
-    return flightRM.newCustomer(id, cid) && carRM.newCustomer(id, cid) && roomRM.newCustomer(id, cid);
+    //this.customerIdx.add(cid);
+    return super.newCustomer(id, cid) && flightRM.newCustomer(id, cid) && carRM.newCustomer(id, cid) && roomRM.newCustomer(id, cid);
   }
 
   @Override
