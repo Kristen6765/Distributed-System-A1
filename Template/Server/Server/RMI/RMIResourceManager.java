@@ -40,9 +40,9 @@ public class RMIResourceManager extends ResourceManager
 			// Bind the remote object's stub in the registry
 			Registry l_registry;
 			try {
-				l_registry = LocateRegistry.createRegistry(3224);
+				l_registry = LocateRegistry.createRegistry( Integer.parseInt(args[1]));
 			} catch (RemoteException e) {
-				l_registry = LocateRegistry.getRegistry(3224);
+				l_registry = LocateRegistry.getRegistry( Integer.parseInt(args[1]));
 			}
 			final Registry registry = l_registry;
 			registry.rebind(s_rmiPrefix + s_serverName, resourceManager);
