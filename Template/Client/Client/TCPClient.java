@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 
 public class TCPClient extends Client{
 
-    private static String s_serverHost = "localhost";
+    private static String s_serverHost = "lab2-8";
     private static int s_serverPort = 12345;
     private static String s_serverName = "Server";
 

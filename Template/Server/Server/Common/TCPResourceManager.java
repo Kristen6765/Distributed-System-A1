@@ -23,9 +23,10 @@ public class TCPResourceManager extends ResourceManager {
     public static void main(String[] args) throws Exception{
         System.out.println("Server start");
         manager = new TCPResourceManager(args[0]);
+	int port = Integer.parseInt(args[1]);
         while(true) {
             try {
-                ServerSocket ss = new ServerSocket(12345);
+                ServerSocket ss = new ServerSocket(port);
                 Socket s = ss.accept();//establishes connection
                 PrintWriter out = new PrintWriter(s.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
