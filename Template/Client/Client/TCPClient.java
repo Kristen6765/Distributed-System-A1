@@ -356,7 +356,7 @@ public class TCPClient extends Client{
 //            else
 //                res = "\n" + line;
 //        }
-//        connectServer();
+        connectServer();
         System.out.println("result: " + res); // print the server result to the user
         boolean success = false;
         try {

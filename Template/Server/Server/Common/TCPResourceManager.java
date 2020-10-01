@@ -21,9 +21,6 @@ public class TCPResourceManager extends ResourceManager {
 
     public TCPResourceManager(String p_name) {
         super(p_name);
-        this.executor = Executors.newFixedThreadPool(threads);
-        logger.info("TCPResourceManager " + p_name + " initialized.");
-        logger.info("TCPResourceManager " + p_name + " has a thread pool of " + threads + " threads.");
     }
 
     public static void main(String[] args) {
@@ -38,43 +35,51 @@ public class TCPResourceManager extends ResourceManager {
 
     public void start(int port) {
         try {
+            this.executor = Executors.newFixedThreadPool(threads);
+            logger.info("TCPResourceManager " + m_name + " initialized.");
+            logger.info("TCPResourceManager " + m_name + " has a thread pool of " + threads + " threads.");
             serverSocket = new ServerSocket(port);
             logger.info("TCPResourceManager " + s_serverName + " binded to port " + port);
             while(true) {
-                executor.submit(new Handler(serverSocket.accept()));
+                executor.submit(new Handler(serverSocket.accept(), this));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static class Handler implements Runnable {
+    static class Handler implements Runnable {
         private Socket socket;
         private PrintWriter outToClient;
         private BufferedReader inFromClient;
+        private TCPResourceManager manager = null;
 
-        public Handler(Socket socket) {
+        public Handler(Socket socket, TCPResourceManager manager) {
             this.socket = socket;
+            this.manager = manager;
             logger.info("Connected by " + this.socket.getRemoteSocketAddress().toString());
         }
 
         public void run() {
             try {
-                Thread.sleep(10000);
+//                Thread.sleep(10000);
                 logger.info("Thread: " + Thread.currentThread().getName());
                 outToClient = new PrintWriter(socket.getOutputStream(), true);
                 inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String input = inFromClient.readLine();
-
+                System.out.println(input);
                 Vector<String> command = Parser.parse(input);
+                System.out.println(command);
                 if(command == null) {
                     outToClient.println("");
                     inFromClient.close();
+                    outToClient.close();
                     socket.close();
                 } else {
                     String response = manager.execute(command);
                     outToClient.println(response);
                     inFromClient.close();
+                    outToClient.close();
                     socket.close();
                 }
 
@@ -88,6 +93,7 @@ public class TCPResourceManager extends ResourceManager {
         try {
             switch (command.get(0).toLowerCase()) {
                 case "addflight": {
+                    logger.info(command.toString());
                     int xid = Integer.parseInt(command.get(1));
                     int flightNumber = Integer.parseInt(command.get(2));
                     int num = Integer.parseInt(command.get(3));
@@ -95,6 +101,7 @@ public class TCPResourceManager extends ResourceManager {
                     return Boolean.toString(manager.addFlight(xid, flightNumber, num, price));
                 }
                 case "addcars": {
+                    logger.info(command.toString());
                     int xid = Integer.parseInt(command.get(1));
                     String location = command.get(2);
                     int num = Integer.parseInt(command.get(3));
@@ -194,11 +201,10 @@ public class TCPResourceManager extends ResourceManager {
                 case "bundle": {
 
                 }
-
             }
         } catch(Exception e) {
             System.err.println((char)27 + "[31;1mExecution exception: " + (char)27 + "[0m" + e.getLocalizedMessage());
         }
-        return "Error";
+        return "";
     }
 }
