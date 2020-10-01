@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 public class TCPClient extends Client{
 
     private static String s_serverHost = "localhost";
-    private static int s_serverPort = 12345;
+    private static int s_serverPort = 3024;
     private static String s_serverName = "Server";
 
     // TODO: ADD YOUR GROUP NUMBER TO COMPILE
