@@ -46,6 +46,9 @@ public class ServerSocketThread extends Thread {
 	}
 
 	public static Vector<String> parse(String command) {
+		if(command.charAt(0) == '[' && command.charAt(command.length()-1) == ']'){
+			command = command.substring(1, command.length()-1);
+		}
 		Vector<String> arguments = new Vector<String>();
 		StringTokenizer tokenizer = new StringTokenizer(command, ",");
 		String argument = "";
