@@ -4,51 +4,82 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 public class TCPResourceManager extends ResourceManager {
 
+    private static ExecutorService executor = null;
+    private static int threads = 10;
     private static TCPResourceManager manager = null;
-
-    private static String s_serverHost = "localhost";
-    private static int s_serverPort = 12345;
     private static String s_serverName = "Server";
+    private static int s_serverPort = 12345;
+    private static final Logger logger = Logger.getLogger(TCPResourceManager.class.getName());
 
     private ServerSocket serverSocket;
 
     public TCPResourceManager(String p_name) {
         super(p_name);
+        this.executor = Executors.newFixedThreadPool(threads);
+        logger.info("TCPResourceManager " + p_name + " initialized.");
+        logger.info("TCPResourceManager " + p_name + " has a thread pool of " + threads + " threads.");
     }
 
+    public static void main(String[] args) {
+        if(args.length > 0) {
+            s_serverName = args[0];
+            s_serverPort = Integer.parseInt(args[1]);
+        }
 
-    public static void main(String[] args) throws Exception{
-        System.out.println("Server start");
-        manager = new TCPResourceManager(args[0]);
-	int port = Integer.parseInt(args[1]);
-        while(true) {
+        manager = new TCPResourceManager(s_serverName);
+        manager.start(s_serverPort);
+    }
+
+    public void start(int port) {
+        try {
+            serverSocket = new ServerSocket(port);
+            logger.info("TCPResourceManager " + s_serverName + " binded to port " + port);
+            while(true) {
+                executor.submit(new Handler(serverSocket.accept()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class Handler implements Runnable {
+        private Socket socket;
+        private PrintWriter outToClient;
+        private BufferedReader inFromClient;
+
+        public Handler(Socket socket) {
+            this.socket = socket;
+            logger.info("Connected by " + this.socket.getRemoteSocketAddress().toString());
+        }
+
+        public void run() {
             try {
-                ServerSocket ss = new ServerSocket(port);
-                Socket s = ss.accept();//establishes connection
-                PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                Thread.sleep(10000);
+                logger.info("Thread: " + Thread.currentThread().getName());
+                outToClient = new PrintWriter(socket.getOutputStream(), true);
+                inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String input = inFromClient.readLine();
 
-                Vector<String> parsedCommand = Parser.parse(in.readLine());
-
-                if (parsedCommand == null) {
-                    System.out.println("null");
-                    out.println("");
-                    in.close();
-                    out.close();
-                    s.close();
+                Vector<String> command = Parser.parse(input);
+                if(command == null) {
+                    outToClient.println("");
+                    inFromClient.close();
+                    socket.close();
+                } else {
+                    String response = manager.execute(command);
+                    outToClient.println(response);
+                    inFromClient.close();
+                    socket.close();
                 }
 
-                String response = manager.execute(parsedCommand);
-                System.out.println("response: " + response);
-                out.println(response);
-                in.close();
-                out.close();
-                ss.close();
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
             }
         }
     }
@@ -161,8 +192,7 @@ public class TCPResourceManager extends ResourceManager {
                     return Boolean.toString(manager.reserveRoom(xid, customerID, location));
                 }
                 case "bundle": {
-//
-                    return null;
+
                 }
 
             }
@@ -171,5 +201,4 @@ public class TCPResourceManager extends ResourceManager {
         }
         return "Error";
     }
-
 }

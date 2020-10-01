@@ -10,12 +10,7 @@ public class Parser {
         if (input == null || input.length() == 0)
             return null;
 
-        String command;
-
-        if (input.charAt(0) == '[' && input.charAt(input.length() - 1) == ']')
-            command = input.substring(1,input.length() - 1);
-        else
-            command = input;
+        String command = input;
 
         Vector<String> arguments = new Vector<String>();
         StringTokenizer tokenizer = new StringTokenizer(command,",");
