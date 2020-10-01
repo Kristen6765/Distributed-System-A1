@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Vector;
 
-import Client.Command;
 import Server.Common.*;
 import Server.Interface.*;
 
