@@ -35,7 +35,7 @@ public class ClientSocket {
 				Thread.sleep(500);
 			}
 		} catch (Exception e) {
-			System.err.println((char) 27 + "[31;1mServer exception: " + (char) 27 + "[0mUncaught exception");
+			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception\n" + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -47,13 +47,13 @@ public class ClientSocket {
 		// establish a new connection before finishing
 		outToServer.println(message);
 		String line = inFromServer.readLine();
-		String res = "";
-		while (line != null) {
-			if (res.length() == 0)
-				res = line;
-			else
-				res = "\n" + line;
-		}
+		String res = line;
+		// while (line != null) {
+		// 	if (res.length() == 0)
+		// 		res = line;
+		// 	else
+		// 		res = "\n" + line;
+		// }
 		connect();
 		System.out.println("result: " + res); // print the server result to the user\
 		return res;
@@ -65,7 +65,7 @@ public class ClientSocket {
 			outToServer.close();
 			socket.close();
 		} catch (Exception e) {
-			System.err.println((char) 27 + "[31;1mServer exception: cannot disconnect" + (char) 27
+			System.err.println((char) 27 + "[31;1mMiddleware exception: cannot disconnect" + (char) 27
 					+ "[0mUncaught exception: " + e.toString());
 		}
 	}

@@ -47,7 +47,7 @@ public class TCPMiddleware extends ResourceManager {
 						System.out.println("'" + s_serverName + "' resource manager unbound");
 					} catch (Exception e) {
 						System.err.println(
-								(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception");
+								(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception" + e.toString());
 						e.printStackTrace();
 					}
 				}
@@ -60,7 +60,7 @@ public class TCPMiddleware extends ResourceManager {
 				sthread.start();
 			}
 		} catch (Exception e) {
-			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception");
+			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
 		}
 	}
 
@@ -306,7 +306,7 @@ public class TCPMiddleware extends ResourceManager {
 			
 			}
 		} catch (Exception e) {
-			System.out.println((char)27 + "[31;1mMiddleware exception: " + (char)27 + "[0mUncaught exception");
+			System.out.println((char)27 + "[31;1mMiddleware exception: " + (char)27 + "[0mUncaught exception " + e.toString());
 			e.printStackTrace();
 //			System.exit(1);
 		}

@@ -41,7 +41,7 @@ public class ServerSocketThread extends Thread {
 				socket.close();
 			}
 		} catch (IOException e) {
-			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception");
+			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception" + e.toString());
 		}
 	}
 
