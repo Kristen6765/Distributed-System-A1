@@ -1,11 +1,15 @@
 package Server.TCP;
 
-import java.io.IOException;
 import java.net.*;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import Server.Common.*;
 import Server.Interface.*;
+
+import java.io.*;
+import java.util.logging.Logger;
 
 public class TCPMiddleware extends ResourceManager {
 	private static String m_serverName = "Middleware";
@@ -14,14 +18,19 @@ public class TCPMiddleware extends ResourceManager {
 
 	private static ServerSocket serverSocket = null;
 	private static TCPMiddleware socketMiddleware = null;
+
 	private static int middleware_port = 3024;
+	private static int threads = 10;
+
 	private static int server_port_car = 3124;
 	private static int server_port_room = 3224;
 	private static int server_port_flight = 3324;
+	private static ExecutorService executor = null;
 
 	private static ClientSocket flightRM = null;
 	private static ClientSocket carRM = null;
 	private static ClientSocket roomRM = null;
+	private static final Logger logger = Logger.getLogger(TCPResourceManager.class.getName());
 
 	private static String s_serverName = "Server";
 	// TODO: ADD YOUR GROUP NUMBER TO COMPLETE
@@ -38,29 +47,33 @@ public class TCPMiddleware extends ResourceManager {
 			// Middleware must not block when it is waiting for the ResourceManagers to
 			// execute a request.
 			// Runtime.getRuntime().addShutdownHook(new Thread() {
-			// 	public void run() {
-			// 		try {
-			// 			flightRM.stopClient();
-			// 			carRM.stopClient();
-			// 			roomRM.stopClient();
-			// 			serverSocket.close();
-			// 			System.out.println("'" + s_serverName + "' resource manager unbound");
-			// 		} catch (Exception e) {
-			// 			System.err.println(
-			// 					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
-			// 			e.printStackTrace();
-			// 		}
-			// 	}
+			// public void run() {
+			// try {
+			// flightRM.stopClient();
+			// carRM.stopClient();
+			// roomRM.stopClient();
+			// serverSocket.close();
+			// System.out.println("'" + s_serverName + "' resource manager unbound");
+			// } catch (Exception e) {
+			// System.err.println(
+			// (char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught
+			// exception " + e.toString());
+			// e.printStackTrace();
+			// }
+			// }
 			// });
 
 			System.out.println((char) 27 + "[31;1mMiddleware starting to get input...");
-			while (true) {
-				serverSocket = new ServerSocket(middleware_port);
-				ServerSocketThread sthread = new ServerSocketThread(serverSocket.accept(), socketMiddleware);
-				sthread.start();
-			}
+			// while (true) {
+			// serverSocket = new ServerSocket(middleware_port);
+			// ServerSocketThread sthread = new ServerSocketThread(serverSocket.accept(),
+			// socketMiddleware);
+			// sthread.start();
+			// }
+			socketMiddleware.start(middleware_port);
 		} catch (Exception e) {
-			System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
+			System.err.println(
+					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
 		}
 	}
 
@@ -73,24 +86,83 @@ public class TCPMiddleware extends ResourceManager {
 		flightRM.connect();
 		carRM.connect();
 		roomRM.connect();
+
+		this.executor = Executors.newFixedThreadPool(threads);
+		logger.info("TCPResourceManager " + p_name + " initialized.");
+		logger.info("TCPResourceManager " + p_name + " has a thread pool of " + threads + " threads.");
 	}
 
-	public String executeCommand(Command cmd, Vector<String> arguments, String message) {
+	public void start(int port) {
+		try {
+			serverSocket = new ServerSocket(port);
+			logger.info("TCPResourceManager " + s_serverName + " binded to port " + port);
+			while (true) {
+				executor.submit(new Handler(serverSocket.accept()));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static class Handler implements Runnable {
+		private Socket socket;
+		private PrintWriter outToClient;
+		private BufferedReader inFromClient;
+
+		public Handler(Socket socket) {
+			this.socket = socket;
+			logger.info("Connected by " + this.socket.getRemoteSocketAddress().toString());
+		}
+
+		public void run() {
+			try {
+				BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				PrintWriter outToClient = new PrintWriter(socket.getOutputStream(), true);
+				String message = null;
+				while ((message = inFromClient.readLine()) != null) {
+					System.out.println("message: " + message);
+					Vector<String> arguments = new Vector<String>();
+					arguments = parse(message);
+					Command cmd = Command.fromString((String) arguments.elementAt(0));
+					if (arguments.size() == 0) {
+						outToClient.println("");
+						inFromClient.close();
+						outToClient.close();
+						socket.close();
+						return;
+					}
+
+					String result = executeCommand(cmd, arguments, message);
+
+					outToClient.println(result);
+					inFromClient.close();
+					outToClient.close();
+					socket.close();
+				}
+			} catch (IOException e) {
+				System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception "
+						+ e.toString());
+			}
+		}
+	}
+
+	public static String executeCommand(Command cmd, Vector<String> arguments, String message) {
 		try {
 			switch (cmd) {
 			case AddFlight: {
 				try {
 					synchronized (flightRM) {
-	                    try {
-	                        String res = flightRM.process(message);
-	                        if (res.equals(""))throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	flightRM.connect();
-	                        return flightRM.process(message);
-	                    }
-	                }
-					
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
+
 				} catch (Exception e) {
 					return "Failed to execute command: AddFlight";
 				}
@@ -98,16 +170,17 @@ public class TCPMiddleware extends ResourceManager {
 			case AddCars: {
 				try {
 					synchronized (carRM) {
-	                    try {
-	                        String res = carRM.process(message);
-	                        if (res.equals("")) throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	carRM.connect();
-	                        return carRM.process(message);
-	                    }
-	                }
-					
+						try {
+							String res = carRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							carRM.connect();
+							return carRM.process(message);
+						}
+					}
+
 				} catch (Exception e) {
 					return "Failed to execute command: AddCars";
 				}
@@ -115,23 +188,24 @@ public class TCPMiddleware extends ResourceManager {
 			case AddRooms: {
 				try {
 					synchronized (roomRM) {
-	                    try {
-	                        String res = roomRM.process(message);
-	                        if (res.equals("")) throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	roomRM.connect();
-	                        return roomRM.process(message);
-	                    }
-	                }
-					
+						try {
+							String res = roomRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							roomRM.connect();
+							return roomRM.process(message);
+						}
+					}
+
 				} catch (Exception e) {
 					return "Failed to execute command: AddCars";
 				}
 			}
 			case AddCustomer: {
 				// TODO: handle this case
-				
+
 				break;
 			}
 			case AddCustomerID: {
@@ -141,15 +215,16 @@ public class TCPMiddleware extends ResourceManager {
 			case DeleteFlight: {
 				try {
 					synchronized (flightRM) {
-	                    try {
-	                        String res = flightRM.process(message);
-	                        if (res.equals("")) throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	flightRM.connect();
-	                        return flightRM.process(message);
-	                    }
-	                }
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
 				} catch (Exception e) {
 					return "Failed to execute command: DeleteFlight";
 				}
@@ -157,15 +232,16 @@ public class TCPMiddleware extends ResourceManager {
 			case DeleteCars: {
 				try {
 					synchronized (carRM) {
-	                    try {
-	                        String res = carRM.process(message);
-	                        if (res.equals("")) throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	carRM.connect();
-	                        return carRM.process(message);
-	                    }
-	                }
+						try {
+							String res = carRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							carRM.connect();
+							return carRM.process(message);
+						}
+					}
 				} catch (Exception e) {
 					return "Failed to execute command: DeleteCars";
 				}
@@ -173,15 +249,16 @@ public class TCPMiddleware extends ResourceManager {
 			case DeleteRooms: {
 				try {
 					synchronized (roomRM) {
-	                    try {
-	                        String res = roomRM.process(message);
-	                        if (res.equals("")) throw new IOException();
-	                        return res;
-	                    } catch (IOException e) {
-	                    	roomRM.connect();
-	                        return roomRM.process(message);
-	                    }
-	                }
+						try {
+							String res = roomRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							roomRM.connect();
+							return roomRM.process(message);
+						}
+					}
 				} catch (Exception e) {
 					return "Failed to execute command: DeleteRooms";
 				}
@@ -192,33 +269,36 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			case QueryFlight: {
 				try {
-                    String res = flightRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	flightRM.connect();
-                    return flightRM.process(message);
-                }
+					String res = flightRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					flightRM.connect();
+					return flightRM.process(message);
+				}
 			}
 			case QueryCars: {
 				try {
-                    String res = carRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	carRM.connect();
-                    return carRM.process(message);
-                }
+					String res = carRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					carRM.connect();
+					return carRM.process(message);
+				}
 			}
 			case QueryRooms: {
 				try {
-                    String res = roomRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	roomRM.connect();
-                    return roomRM.process(message);
-                }
+					String res = roomRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					roomRM.connect();
+					return roomRM.process(message);
+				}
 			}
 			case QueryCustomer: {
 				// TODO: handle this case
@@ -226,33 +306,36 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			case QueryFlightPrice: {
 				try {
-                    String res = flightRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	flightRM.connect();
-                    return flightRM.process(message);
-                }
+					String res = flightRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					flightRM.connect();
+					return flightRM.process(message);
+				}
 			}
 			case QueryCarsPrice: {
 				try {
-                    String res = carRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	carRM.connect();
-                    return carRM.process(message);
-                }
+					String res = carRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					carRM.connect();
+					return carRM.process(message);
+				}
 			}
 			case QueryRoomsPrice: {
 				try {
-                    String res = roomRM.process(message);
-                    if (res.equals("")) throw new IOException();
-                    return res;
-                } catch (IOException e) {
-                	roomRM.connect();
-                    return roomRM.process(message);
-                }
+					String res = roomRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					roomRM.connect();
+					return roomRM.process(message);
+				}
 			}
 			case ReserveFlight: {
 				break;
@@ -303,14 +386,29 @@ public class TCPMiddleware extends ResourceManager {
 				// }
 				break;
 			}
-			
+
 			}
 		} catch (Exception e) {
-			System.out.println((char)27 + "[31;1mMiddleware exception: " + (char)27 + "[0mUncaught exception " + e.toString());
+			System.out.println(
+					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
 			e.printStackTrace();
 //			System.exit(1);
 		}
 		return "";
 	}
-}
 
+	public static Vector<String> parse(String command) {
+		if (command.charAt(0) == '[' && command.charAt(command.length() - 1) == ']') {
+			command = command.substring(1, command.length() - 1);
+		}
+		Vector<String> arguments = new Vector<String>();
+		StringTokenizer tokenizer = new StringTokenizer(command, ",");
+		String argument = "";
+		while (tokenizer.hasMoreTokens()) {
+			argument = tokenizer.nextToken();
+			argument = argument.trim();
+			arguments.add(argument);
+		}
+		return arguments;
+	}
+}
