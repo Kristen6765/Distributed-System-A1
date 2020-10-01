@@ -37,21 +37,21 @@ public class TCPMiddleware extends ResourceManager {
 
 			// Middleware must not block when it is waiting for the ResourceManagers to
 			// execute a request.
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					try {
-						flightRM.stopClient();
-						carRM.stopClient();
-						roomRM.stopClient();
-						serverSocket.close();
-						System.out.println("'" + s_serverName + "' resource manager unbound");
-					} catch (Exception e) {
-						System.err.println(
-								(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception" + e.toString());
-						e.printStackTrace();
-					}
-				}
-			});
+			// Runtime.getRuntime().addShutdownHook(new Thread() {
+			// 	public void run() {
+			// 		try {
+			// 			flightRM.stopClient();
+			// 			carRM.stopClient();
+			// 			roomRM.stopClient();
+			// 			serverSocket.close();
+			// 			System.out.println("'" + s_serverName + "' resource manager unbound");
+			// 		} catch (Exception e) {
+			// 			System.err.println(
+			// 					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
+			// 			e.printStackTrace();
+			// 		}
+			// 	}
+			// });
 
 			System.out.println((char) 27 + "[31;1mMiddleware starting to get input...");
 			while (true) {
