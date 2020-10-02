@@ -14,7 +14,9 @@ import java.util.logging.Logger;
 public class TCPMiddleware extends ResourceManager {
 	private static String m_serverName = "Middleware";
 	private static String m_rmiPrefix = "group_24_";
-	private static String server_host = "localhost";
+	private static String server_host_car;
+	private static String server_host_room;
+	private static String server_host_flight;
 
 	private static ServerSocket serverSocket = null;
 	private static TCPMiddleware socketMiddleware = null;
@@ -38,6 +40,9 @@ public class TCPMiddleware extends ResourceManager {
 
 	public static void main(String[] args) {
 		if (args.length > 0) {
+			server_host_car=args[0];
+			server_host_room=args[1];
+			server_host_flight=args[2];
 			s_serverName = args[3];
 		}
 
@@ -79,9 +84,9 @@ public class TCPMiddleware extends ResourceManager {
 
 	public TCPMiddleware(String p_name) {
 		super(p_name);
-		flightRM = new ClientSocket(server_host, server_port_flight);
-		carRM = new ClientSocket(server_host, server_port_car);
-		roomRM = new ClientSocket(server_host, server_port_room);
+		flightRM = new ClientSocket(server_host_flight, server_port_flight);
+		carRM = new ClientSocket(server_host_car, server_port_car);
+		roomRM = new ClientSocket(server_host_room, server_port_room);
 
 		flightRM.connect();
 		carRM.connect();
