@@ -381,7 +381,7 @@ public class TCPMiddleware extends ResourceManager {
 					}
 
 				} catch (Exception e) {
-					return "Failed to addCustomer to room server";
+					return "Failed to execute command: DeleteCustomer";
 				}
 			}
 			case QueryFlight: {
@@ -455,7 +455,7 @@ public class TCPMiddleware extends ResourceManager {
 					}
 
 				} catch (Exception e) {
-					return "Failed to addCustomer to room server";
+					return "Failed to execute command: QueryCustomer";
 				}
 			}
 			case QueryFlightPrice: {
