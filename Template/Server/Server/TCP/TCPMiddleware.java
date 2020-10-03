@@ -246,44 +246,47 @@ public class TCPMiddleware extends ResourceManager {
 
 				} catch (Exception e) {
 					return "Failed to addCustomer to room server";
-				 }
-				// try {
-				// 	synchronized (carRM) {
-				// 		try {
-				// 			String res = carRM.process(message);
-				// 			if (res.equals(""))
-				// 				throw new IOException();
-				// 			return res;
-				// 		} catch (IOException e) {
-				// 			carRM.connect();
-				// 			return carRM.process(message);
-				// 		}
-				// 	}
-
-				// } catch (Exception e) {
-				// 	return "Failed to addCustomer to car server";
-				// }
-				// try {
-				// 	synchronized (flightRM) {
-				// 		try {
-				// 			String res = flightRM.process(message);
-				// 			if (res.equals(""))
-				// 				throw new IOException();
-				// 			return res;
-				// 		} catch (IOException e) {
-				// 			flightRM.connect();
-				// 			return flight.process(message);
-				// 		}
-				// 	}
-
-				// } catch (Exception e) {
-				// 	return "Failed to addCustomer to flight server";
-				// }
-				// break;
+				}
 			}
 			case AddCustomerID: {
-				// TODO: handle this case
-				break;
+				try {
+					synchronized (roomRM) {
+						try {
+							String res = roomRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+						
+						} catch (IOException e) {
+							roomRM.connect();
+							return roomRM.process(message);
+						}
+					}
+					synchronized (carRM) {
+						try {
+							String res = carRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							
+						} catch (IOException e) {
+							carRM.connect();
+							return carRM.process(message);
+						}
+					}
+					synchronized (flightRM) {
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
+
+				} catch (Exception e) {
+					return "Failed to addCustomer to room server";
+				}
 			}
 			case DeleteFlight: {
 				try {
