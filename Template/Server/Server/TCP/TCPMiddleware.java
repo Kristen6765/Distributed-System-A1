@@ -242,7 +242,7 @@ public class TCPMiddleware extends ResourceManager {
 							String res = flightRM.process(message);
 							if (res.equals(""))
 								throw new IOException();
-							return res;
+							return String.valueOf(cid);
 						} catch (IOException e) {
 							flightRM.connect();
 							return flightRM.process(message);
