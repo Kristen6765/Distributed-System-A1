@@ -357,7 +357,7 @@ public abstract class Client
 				if (m_resourceManager.reserveCar(id, customerID, location)) {
 					System.out.println("Car Reserved");
 				} else {
-					System.out.println("Car could not be reserved");
+					System.out.println("Car could not be reserved 123");
 				}
 				break;
 			}

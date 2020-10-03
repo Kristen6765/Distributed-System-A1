@@ -209,9 +209,77 @@ public class TCPMiddleware extends ResourceManager {
 				}
 			}
 			case AddCustomer: {
-				// TODO: handle this case
+				try {
+					synchronized (roomRM) {
+						try {
+							String res = roomRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+						
+						} catch (IOException e) {
+							roomRM.connect();
+							return roomRM.process(message);
+						}
+					}
+					synchronized (carRM) {
+						try {
+							String res = carRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							
+						} catch (IOException e) {
+							carRM.connect();
+							return carRM.process(message);
+						}
+					}
+					synchronized (flightRM) {
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
 
-				break;
+				} catch (Exception e) {
+					return "Failed to addCustomer to room server";
+				 }
+				// try {
+				// 	synchronized (carRM) {
+				// 		try {
+				// 			String res = carRM.process(message);
+				// 			if (res.equals(""))
+				// 				throw new IOException();
+				// 			return res;
+				// 		} catch (IOException e) {
+				// 			carRM.connect();
+				// 			return carRM.process(message);
+				// 		}
+				// 	}
+
+				// } catch (Exception e) {
+				// 	return "Failed to addCustomer to car server";
+				// }
+				// try {
+				// 	synchronized (flightRM) {
+				// 		try {
+				// 			String res = flightRM.process(message);
+				// 			if (res.equals(""))
+				// 				throw new IOException();
+				// 			return res;
+				// 		} catch (IOException e) {
+				// 			flightRM.connect();
+				// 			return flight.process(message);
+				// 		}
+				// 	}
+
+				// } catch (Exception e) {
+				// 	return "Failed to addCustomer to flight server";
+				// }
+				// break;
 			}
 			case AddCustomerID: {
 				// TODO: handle this case
@@ -346,58 +414,50 @@ public class TCPMiddleware extends ResourceManager {
 				break;
 			}
 			case ReserveCar: {
-				break;
+				try {
+					String res = carRM.process(message);
+					if (res.equals(""))
+						throw new IOException();
+					return res;
+				} catch (IOException e) {
+					carRM.connect();
+					return carRM.process(message);
+				}
+			
 			}
 			case ReserveRoom: {
 				break;
 			}
 			case Bundle: {
 				// TODO: implement bundle
-				// if (arguments.size() < 7) {
-				// System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 +
-				// "[0mBundle command expects at least 7 arguments. Location \"help\" or
-				// \"help,<CommandName>\"");
-				// break;
-				// }
 
-				// System.out.println("Reserving an bundle [xid=" + arguments.elementAt(1) +
-				// "]");
-				// System.out.println("-Customer ID: " + arguments.elementAt(2));
-				// for (int i = 0; i < arguments.size() - 6; ++i)
-				// {
-				// System.out.println("-Flight Number: " + arguments.elementAt(3+i));
-				// }
-				// System.out.println("-Location for Car/Room: " +
-				// arguments.elementAt(arguments.size()-3));
-				// System.out.println("-Book Car: " + arguments.elementAt(arguments.size()-2));
-				// System.out.println("-Book Room: " + arguments.elementAt(arguments.size()-1));
-
-				// int id = toInt(arguments.elementAt(1));
-				// int customerID = toInt(arguments.elementAt(2));
-				// Vector<String> flightNumbers = new Vector<String>();
-				// for (int i = 0; i < arguments.size() - 6; ++i)
-				// {
-				// flightNumbers.addElement(arguments.elementAt(3+i));
-				// }
-				// String location = arguments.elementAt(arguments.size()-3);
-				// boolean car = toBoolean(arguments.elementAt(arguments.size()-2));
-				// boolean room = toBoolean(arguments.elementAt(arguments.size()-1));
-
-				// if (m_resourceManager.bundle(id, customerID, flightNumbers, location, car,
-				// room)) {
-				// System.out.println("Bundle Reserved");
-				// } else {
-				// System.out.println("Bundle could not be reserved");
-				// }
+				if (arguments.size() < 7) {
+				System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 +
+				"[0mBundle command expects at least 7 arguments. Location \"help\" or \"help,<CommandName>\"");
 				break;
-			}
+				}
 
+				try {
+					synchronized (flightRM) {
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
+				} catch (Exception e) {
+					return "Failed to execute command: DeleteRooms";
+				}
+			}
 			}
 		} catch (Exception e) {
 			System.out.println(
 					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
-			e.printStackTrace();
-//			System.exit(1);
+			e.printStackTrace(); 
 		}
 		return "";
 	}

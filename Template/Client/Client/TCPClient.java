@@ -290,42 +290,41 @@ public class TCPClient extends Client{
                 }
                 case Bundle: {
                     // TODO: implement bundle
-                    // if (arguments.size() < 7) {
-                    // System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 +
-                    // "[0mBundle command expects at least 7 arguments. Location \"help\" or
-                    // \"help,<CommandName>\"");
-                    // break;
-                    // }
+                    if (arguments.size() < 7) {
+                    System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 +
+                    "[0mBundle command expects at least 7 arguments. Location \"help\" or \"help,<CommandName>\"");
+                    break;
+                    }
 
-                    // System.out.println("Reserving an bundle [xid=" + arguments.elementAt(1) +
-                    // "]");
-                    // System.out.println("-Customer ID: " + arguments.elementAt(2));
-                    // for (int i = 0; i < arguments.size() - 6; ++i)
-                    // {
-                    // System.out.println("-Flight Number: " + arguments.elementAt(3+i));
-                    // }
-                    // System.out.println("-Location for Car/Room: " +
-                    // arguments.elementAt(arguments.size()-3));
-                    // System.out.println("-Book Car: " + arguments.elementAt(arguments.size()-2));
-                    // System.out.println("-Book Room: " + arguments.elementAt(arguments.size()-1));
+                    System.out.println("Reserving an bundle [xid=" + arguments.elementAt(1) +
+                    "]");
+                    System.out.println("-Customer ID: " + arguments.elementAt(2));
+                    for (int i = 0; i < arguments.size() - 6; ++i)
+                    {
+                    System.out.println("-Flight Number: " + arguments.elementAt(3+i));
+                    }
+                    System.out.println("-Location for Car/Room: " +
+                    arguments.elementAt(arguments.size()-3));
+                    System.out.println("-Book Car: " + arguments.elementAt(arguments.size()-2));
+                    System.out.println("-Book Room: " + arguments.elementAt(arguments.size()-1));
 
-                    // int id = toInt(arguments.elementAt(1));
-                    // int customerID = toInt(arguments.elementAt(2));
-                    // Vector<String> flightNumbers = new Vector<String>();
-                    // for (int i = 0; i < arguments.size() - 6; ++i)
-                    // {
-                    // flightNumbers.addElement(arguments.elementAt(3+i));
-                    // }
-                    // String location = arguments.elementAt(arguments.size()-3);
-                    // boolean car = toBoolean(arguments.elementAt(arguments.size()-2));
-                    // boolean room = toBoolean(arguments.elementAt(arguments.size()-1));
+                    int id = toInt(arguments.elementAt(1));
+                    int customerID = toInt(arguments.elementAt(2));
+                    Vector<String> flightNumbers = new Vector<String>();
+                    for (int i = 0; i < arguments.size() - 6; ++i)
+                    {
+                    flightNumbers.addElement(arguments.elementAt(3+i));
+                    }
+                    String location = arguments.elementAt(arguments.size()-3);
+                    boolean car = toBoolean(arguments.elementAt(arguments.size()-2));
+                    boolean room = toBoolean(arguments.elementAt(arguments.size()-1));
 
-                    // if (m_resourceManager.bundle(id, customerID, flightNumbers, location, car,
-                    // room)) {
-                    // System.out.println("Bundle Reserved");
-                    // } else {
-                    // System.out.println("Bundle could not be reserved");
-                    // }
+                    if (m_resourceManager.bundle(id, customerID, flightNumbers, location, car,
+                    room)) {
+                    System.out.println("Bundle Reserved");
+                    } else {
+                    System.out.println("Bundle could not be reserved");
+                    }
                     break;
                 }
                 case Quit:
@@ -356,7 +355,11 @@ public class TCPClient extends Client{
 //            else
 //                res = "\n" + line;
 //        }
-        connectServer();
+        try{
+             connectServer();
+        }catch(Exception e){
+          e.printStackTrace();
+        }
         System.out.println("result: " + res); // print the server result to the user
         boolean success = false;
         try {

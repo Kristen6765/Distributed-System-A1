@@ -194,6 +194,24 @@ public class TCPResourceManager extends ResourceManager {
                     return Boolean.toString(manager.reserveRoom(xid, customerID, location));
                 }
                 case "bundle": {
+                    Vector<String> command_new= new Vector<String>();
+                    int xid = Integer.parseInt(command.get(1));
+                    int customerID = Integer.parseInt(command.get(2));
+                    for(int i=3; i<command.size()-2; i++){
+                         int flightNum = Integer.parseInt(command.get(i));
+                         command_new.add("reserveflight");
+                         command_new.add(Integer.toString(xid));
+                         command_new.add(Integer.toString(customerID));
+                        execute(command_new);
+                    }
+                    if(Boolean.parseBoolean(command.get(command.size()-2))){
+                         command_new.set(0,"reserveCar");
+                         execute(command_new);
+                    }
+                    if(Boolean.parseBoolean(command.get(command.size()-1))){
+                          command_new.set(0,"reserveRoom");
+                          execute(command_new);
+                    }
 
                 }
 
