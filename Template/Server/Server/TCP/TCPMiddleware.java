@@ -210,6 +210,11 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			case AddCustomer: {
 				try {
+					String xid = (String) arguments.elementAt(1);
+					int cid = Integer.parseInt(xid +
+					String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND)) +
+					String.valueOf(Math.round(Math.random() * 100 + 1)));
+					message = String.format("AddCustomerID,%s,%d",xid,cid);
 					synchronized (roomRM) {
 						try {
 							String res = roomRM.process(message);
