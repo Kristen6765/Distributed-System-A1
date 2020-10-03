@@ -210,6 +210,11 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			case AddCustomer: {
 				try {
+					String xid = (String) arguments.elementAt(1);
+					int cid = Integer.parseInt(xid +
+					String.valueOf(Calendar.getInstance().get(Calendar.MILLISECOND)) +
+					String.valueOf(Math.round(Math.random() * 100 + 1)));
+					message = String.format("AddCustomerID,%s,%d",xid,cid);
 					synchronized (roomRM) {
 						try {
 							String res = roomRM.process(message);
@@ -487,22 +492,57 @@ public class TCPMiddleware extends ResourceManager {
 				}
 			}
 			case ReserveFlight: {
-				break;
+				try {
+					synchronized (flightRM) {
+						try {
+							String res = flightRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							flightRM.connect();
+							return flightRM.process(message);
+						}
+					}
+				} catch (Exception e) {
+					return "Failed to execute command: ReserveFlight";
+				}
 			}
 			case ReserveCar: {
-				try {
-					String res = carRM.process(message);
-					if (res.equals(""))
-						throw new IOException();
-					return res;
-				} catch (IOException e) {
-					carRM.connect();
-					return carRM.process(message);
+				try{
+					synchronized(carRM){
+						try {
+							String res = carRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							carRM.connect();
+							return carRM.process(message);
+						}
+					}
+					
+				} catch (Exception e) {
+					return "Failed to execute command: ReserveCar";
 				}
-			
 			}
 			case ReserveRoom: {
-				break;
+				try{
+					synchronized(roomRM){
+						try {
+							String res = roomRM.process(message);
+							if (res.equals(""))
+								throw new IOException();
+							return res;
+						} catch (IOException e) {
+							roomRM.connect();
+							return roomRM.process(message);
+						}
+					}
+					
+				} catch (Exception e) {
+					return "Failed to execute command: ReserveRoom";
+				}
 			}
 			case Bundle: {
 				// TODO: implement bundle
