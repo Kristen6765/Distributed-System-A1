@@ -518,7 +518,7 @@ public class TCPMiddleware extends ResourceManager {
 					}
 					
 				} catch (Exception e) {
-					return "Failed to execute command: ReserveCar"
+					return "Failed to execute command: ReserveCar";
 				}
 			}
 			case ReserveRoom: {
@@ -536,7 +536,7 @@ public class TCPMiddleware extends ResourceManager {
 					}
 					
 				} catch (Exception e) {
-					return "Failed to execute command: ReserveRoom"
+					return "Failed to execute command: ReserveRoom";
 				}
 			}
 			case Bundle: {
