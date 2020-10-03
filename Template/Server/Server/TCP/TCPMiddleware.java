@@ -68,7 +68,7 @@ public class TCPMiddleware extends ResourceManager {
 			// }
 			// });
 
-			System.out.println((char) 27 + "[31;1mMiddleware starting to get input...");
+			System.out.println((char) 27 + "[31;Middleware starting to get input...");
 			// while (true) {
 			// serverSocket = new ServerSocket(middleware_port);
 			// ServerSocketThread sthread = new ServerSocketThread(serverSocket.accept(),
