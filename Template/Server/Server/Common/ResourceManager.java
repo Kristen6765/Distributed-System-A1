@@ -290,7 +290,8 @@ public class ResourceManager implements IResourceManager
 		{
 			Trace.info("RM::queryCustomerInfo(" + xid + ", " + customerID + ")");
 			System.out.println(customer.getBill());
-			return customer.getBill();
+			System.out.println(customer.getSummary());
+			return customer.getBill() + customer.getSummary();
 		}
 	}
 
