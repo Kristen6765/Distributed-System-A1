@@ -382,6 +382,28 @@ public class ResourceManager implements IResourceManager
 		return false;
 	}
 
+	public HashMap<Integer,String> getReserved (int xid) throws RemoteException {
+		HashMap<Integer,String> m = new HashMap<Integer,String>();
+		String summary = "";
+		m_data.dump();
+		for (String key: m_data.keySet()) {
+			String type = key.split("-")[0];
+			System.out.println(type);
+			if (!type.equals("customer"))
+				continue;
+			Customer customer = (Customer)readData(xid, key);
+			int cid = customer.getID();
+			String temp = customer.getSummary();
+			m.put(cid, temp);
+
+		}
+		return m;
+	}
+
+	public String Summary(int id) throws RemoteException {
+		return "";
+}
+
 	public String getName() throws RemoteException
 	{
 		return m_name;

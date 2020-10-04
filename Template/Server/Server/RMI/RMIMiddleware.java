@@ -250,6 +250,25 @@ public class RMIMiddleware extends ResourceManager
 		return res; // return False if any of the above failed
   }
 
+  @Override
+  public String Summary(int id) throws RemoteException {
+    String s = "";
+    HashMap<Integer,String> cars = carRM.getReserved(id);
+    HashMap<Integer,String> rooms = roomRM.getReserved(id);
+    HashMap<Integer,String> flights = flightRM.getReserved(id);	
+    for(Integer key: cars.keySet()) {
+	s = s.concat("Customer: "+key+"\n");
+    	System.out.println(cars.get(key));
+    	System.out.println(rooms.get(key));
+    	System.out.println(flights.get(key));
+    	s = s.concat(cars.get(key)).concat(rooms.get(key)).concat(flights.get(key)).concat("\n");
+    }
+    return s;
+  }
+
+
+
+
 	public String getName() throws RemoteException
 	{
 		return m_name;

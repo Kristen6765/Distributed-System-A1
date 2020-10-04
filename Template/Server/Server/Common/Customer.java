@@ -64,7 +64,8 @@ public class Customer extends RMItem
 
 	public String getSummary()
 	{
-		String s = "Customer " + m_ID + "\n";
+		//String s = "Customer " + m_ID + "\n";
+		String s = "";
 		for (String key : m_reservations.keySet())
 		{
 			ReservedItem item = (ReservedItem) m_reservations.get(key);
