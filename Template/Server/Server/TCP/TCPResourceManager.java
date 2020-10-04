@@ -75,6 +75,8 @@ public class TCPResourceManager extends ResourceManager {
                     socket.close();
                 } else {
                     String response = manager.execute(command);
+		    System.out.println("Response: ");
+		    System.out.println(response);
                     outToClient.println(response);
                     inFromClient.close();
                     socket.close();
@@ -217,9 +219,13 @@ public class TCPResourceManager extends ResourceManager {
                 case "summary": {
                 	int xid = Integer.parseInt(command.get(1));
                 	HashMap<Integer, String> reservedItems = manager.getReserved(xid);
-                    String r = "";
-                    for(Integer key: reservedItems.keySet()) {
-                        r = r.concat(key + "\n").concat(reservedItems.get(key));
+                        String r = "";
+			//System.out.println(reservedItems.toString());
+                        for(Integer key: reservedItems.keySet()) {
+	         		System.out.println("key: " + key);
+		        	System.out.println("Value: " + reservedItems.get(key));
+				if (reservedItems.get(key) == "") continue;
+                                r = r.concat("Customer: " + key + " { ").concat(reservedItems.get(key)).concat("}; ");
                     }
 
                 	return r;

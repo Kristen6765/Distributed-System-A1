@@ -49,13 +49,13 @@ public class ClientSocket {
 		String line = inFromServer.readLine();
 		String res = line;
 		// while (line != null) {
-		// 	if (res.length() == 0)
-		// 		res = line;
-		// 	else
-		// 		res = "\n" + line;
+	//	 	if (res.length() == 0)
+	//	 		res = line;
+	//	 	else
+	//	 		res = "\n" + line;
 
-		// 	line = inFromServer.readLine();
-		// }
+	//	 	line = inFromServer.readLine();
+	//	 }
 		connect();
 		System.out.println("result: " + res); // print the server result to the user\
 		return res;

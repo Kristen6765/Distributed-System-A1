@@ -387,12 +387,13 @@ public class ResourceManager implements IResourceManager
 		String summary = "";
 		for (String key: m_data.keySet()) {
 			String type = key.split("-")[0];
-			System.out.println(type);
+                      //			System.out.println(type);
 			if (!type.equals("customer"))
 				continue;
 			Customer customer = (Customer)readData(xid, key);
 			int cid = customer.getID();
 			String temp = customer.getSummary();
+			System.out.println(temp);
 			m.put(cid, temp);
 		}
 		return m;

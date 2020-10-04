@@ -357,15 +357,15 @@ public class TCPClient extends Client{
         String line = inFromServer.readLine().replaceAll("!!","\n");
         String res = "";
         res = line;
-    //    while (line != null) {
-    //        System.out.println(line);
-    //        if (res.length() == 0)
-    //            res = line;
-    //        else
-    //            res = "\n" + line;
+      //  while (line != null) {
+        //    System.out.println(line);
+         //   if (res.length() == 0)
+         //       res = line;
+         //   else
+         //       res = "\n" + line;
 
-    //         inFromServer.readLine();
-    //    }
+           //  inFromServer.readLine();
+       // }
         try{
              connectServer();
         }catch(Exception e){
@@ -382,10 +382,11 @@ public class TCPClient extends Client{
                     }
                 } else if (returnType.equals("INT")) {
                     success = true;
-                    System.out.println(successMessage + toInt(res));
+                    System.out.println(successMessage + " " + toInt(res));
                 } else if (returnType.equals("STR")) {
                     success = true;
-                    System.out.println(successMessage + res);
+                    System.out.println(successMessage);
+		    System.out.println(res);
                 }
             }
         } catch (Exception e) {
