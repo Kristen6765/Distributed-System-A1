@@ -413,6 +413,16 @@ public abstract class Client
 				}
 				break;
 			}
+
+			case Summary: {
+				checkArgumentsCount(2, arguments.size());
+				int xid = toInt(arguments.elementAt(1));
+				System.out.println("Resource summary [xid=" + xid + "]");
+				String summary = m_resourceManager.Summary(xid);
+				System.out.println(summary);
+				break;
+			}
+
 			case Quit:
 				checkArgumentsCount(1, arguments.size());
 

@@ -238,7 +238,29 @@ public class RMIMiddleware extends ResourceManager
     return roomRM.reserveRoom(id, customerID, location);
   }
 
-
+  @Override
+  public String Summary(int id) throws RemoteException {
+    // String result = "";
+    // String carReserve = carRM.Summary(id);
+    // System.out.println("car: " + carReserve);
+    // String roomReserve = roomRM.Summary(id);
+    // System.out.println("room: " + roomReserve);
+    // String flightReserve = flightRM.Summary(id);
+    // System.out.println("flight: " + flightReserve);
+    // return result.concat(carReserve).concat(roomReserve).concat(flightReserve);
+    String s = "";
+    HashMap<Integer,String> cars = carRM.getReserved(id);
+    HashMap<Integer,String> rooms = roomRM.getReserved(id);
+    HashMap<Integer,String> flights = flightRM.getReserved(id);	
+    for(Integer key: cars.keySet()) {
+	s = s.concat("Customer: "+key+"\n");
+    	System.out.println(cars.get(key));
+    	System.out.println(rooms.get(key));
+    	System.out.println(flights.get(key));
+    	s = s.concat(cars.get(key)).concat(rooms.get(key)).concat(flights.get(key)).concat("\n");
+    }
+    return s;
+  }
   @Override
   public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location,
       boolean car, boolean room) throws RemoteException {

@@ -29,8 +29,9 @@ public enum Command {
 
 	Bundle("Book N flight numbers, and optionally a room and/or car at a location", "<xid>,<CustomerID>,<FlightNumber1>...<FlightNumberN>,<Location>,<Car-Y/N>,<Room-Y/N>"),
 
-	Quit("Exit the client application", "");
+	Quit("Exit the client application", ""),
 
+        Summary("Overall resource summary (who has reserved an item and at what price", "<xid>");
 	String m_description;
 	String m_args;
 

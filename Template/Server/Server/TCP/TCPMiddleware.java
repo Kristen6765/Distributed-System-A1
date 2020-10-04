@@ -24,9 +24,9 @@ public class TCPMiddleware extends ResourceManager {
 	private static int middleware_port = 3024;
 	private static int threads = 10;
 
-	private static int server_port_car = 3124;
-	private static int server_port_room = 3224;
-	private static int server_port_flight = 3324;
+	private static int server_port_car = 4124;
+	private static int server_port_room = 4224;
+	private static int server_port_flight = 4324;
 	private static ExecutorService executor = null;
 
 	private static ClientSocket flightRM = null;
