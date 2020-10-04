@@ -214,6 +214,10 @@ public class TCPResourceManager extends ResourceManager {
                     }
 
                 }
+                case "summary": {
+                int xid = Integer.parseInt(command.get(1));
+                HashMap<Integer, String> reservedItems = manager.reservedItems(xid);
+                return reservedItems.toString();
 
             }
         } catch(Exception e) {

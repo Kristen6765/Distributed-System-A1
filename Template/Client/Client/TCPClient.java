@@ -328,6 +328,14 @@ public class TCPClient extends Client{
                     }
                     break;
                 }
+                case Summary: {
+                    checkcheckArgumentsCount(1, arguments.size());
+                    System.out.println("Get summary of resources and clients [xid="  + arguments.elementAt(1) + "]");
+                    int id = toInt(arguments.elementAt(1));
+                    process(arguments.toString(), "Report Generated", "Report Cannot be Generated", "STRING");
+                    break;
+                }
+
                 case Quit:
                     checkArgumentsCount(1, arguments.size());
                     stopClient();

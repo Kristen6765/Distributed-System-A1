@@ -580,6 +580,24 @@ public class TCPMiddleware extends ResourceManager {
 					return "Failed to execute command: DeleteRooms";
 				}
 			}
+			case Summary: {
+				    String s = "";
+  					String cars = carRM.process(message);
+    				String rooms = roomRM.process(message);
+    				String flights = flightRM.process(message);	
+    				// for(String key: cars.keySet()) {
+    				// 	System.out.println(cars.get(key))
+    				// 	System.out.println(rooms.get(key))
+    				// 	System.out.println(flights.get(key))
+    				// 	s = s.concat(cars.get(key)).concat(rooms.get(key)).concat(flights.get(key));
+   					// }
+    				System.out.println(cars);
+    				System.out.println(rooms);
+    				System.out.println(flights);
+
+    				return s.concat(cars).concat(rooms).concat(flights);
+				}
+		    }
 			}
 		} catch (Exception e) {
 
