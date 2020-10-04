@@ -53,6 +53,8 @@ public class ClientSocket {
 		// 		res = line;
 		// 	else
 		// 		res = "\n" + line;
+
+		// 	line = inFromServer.readLine();
 		// }
 		connect();
 		System.out.println("result: " + res); // print the server result to the user\

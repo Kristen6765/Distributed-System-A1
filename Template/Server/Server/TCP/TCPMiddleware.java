@@ -21,12 +21,12 @@ public class TCPMiddleware extends ResourceManager {
 	private static ServerSocket serverSocket = null;
 	private static TCPMiddleware socketMiddleware = null;
 
-	private static int middleware_port = 3024;
-	private static int threads = 10;
+	private static int middleware_port = 30024;
+	private static int threads = 2147483647;
 
-	private static int server_port_car = 3124;
-	private static int server_port_room = 3224;
-	private static int server_port_flight = 3324;
+	private static int server_port_car = 31124;
+	private static int server_port_room = 32224;
+	private static int server_port_flight = 33324;
 	private static ExecutorService executor = null;
 
 	private static ClientSocket flightRM = null;
@@ -39,10 +39,11 @@ public class TCPMiddleware extends ResourceManager {
 	private static String s_rmiPrefix = "group_24_";
 
 	public static void main(String[] args) {
+		
 		if (args.length > 0) {
-			server_host_car=args[0];
-			server_host_room=args[1];
-			server_host_flight=args[2];
+			server_host_car=args[1];
+			server_host_room=args[2];
+			server_host_flight=args[0];
 			s_serverName = args[3];
 		}
 
@@ -77,8 +78,9 @@ public class TCPMiddleware extends ResourceManager {
 			// }
 			socketMiddleware.start(middleware_port);
 		} catch (Exception e) {
+				e.printStackTrace(); 
 			System.err.println(
-					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
+					(char) 27 + "[31;1mMiddleware exception:2 " + (char) 27 + "[0mUncaught exception " + e.toString());
 		}
 	}
 
@@ -138,14 +140,15 @@ public class TCPMiddleware extends ResourceManager {
 					}
 
 					String result = executeCommand(cmd, arguments, message);
-
 					outToClient.println(result);
-					inFromClient.close();
-					outToClient.close();
-					socket.close();
 				}
+					//outToClient.println(result);
+					//inFromClient.close();
+					//outToClient.close();
+					socket.close();
 			} catch (IOException e) {
-				System.err.println((char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception "
+					e.printStackTrace(); 
+				System.err.println((char) 27 + "[31;1mMiddleware exception:1 " + (char) 27 + "[0mUncaught exception "
 						+ e.toString());
 			}
 		}
@@ -250,6 +253,8 @@ public class TCPMiddleware extends ResourceManager {
 					}
 
 				} catch (Exception e) {
+					e.printStackTrace();
+				//	System.out.println(e.printStackTrace());
 					return "Failed to addCustomer to room server";
 				}
 			}
@@ -419,13 +424,15 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			case QueryCustomer: {
 				// TODO: handle this case
+				String tt="";
 				try {
 					synchronized (roomRM) {
 						try {
 							String res = roomRM.process(message);
+							System.out.println("room"+res);
 							if (res.equals(""))
 								throw new IOException();
-						
+						tt+=res;
 						} catch (IOException e) {
 							roomRM.connect();
 							return roomRM.process(message);
@@ -434,9 +441,10 @@ public class TCPMiddleware extends ResourceManager {
 					synchronized (carRM) {
 						try {
 							String res = carRM.process(message);
+							System.out.println("car"+res.split("!!", 2)[1]);
 							if (res.equals(""))
 								throw new IOException();
-							
+								tt+=res;
 						} catch (IOException e) {
 							carRM.connect();
 							return carRM.process(message);
@@ -445,9 +453,11 @@ public class TCPMiddleware extends ResourceManager {
 					synchronized (flightRM) {
 						try {
 							String res = flightRM.process(message);
+							System.out.println("flight"+res);
 							if (res.equals(""))
 								throw new IOException();
-							return res;
+									tt+=res;
+							return tt;
 						} catch (IOException e) {
 							flightRM.connect();
 							return flightRM.process(message);
@@ -455,6 +465,7 @@ public class TCPMiddleware extends ResourceManager {
 					}
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					return "Failed to execute command: QueryCustomer";
 				}
 			}
@@ -571,8 +582,9 @@ public class TCPMiddleware extends ResourceManager {
 			}
 			}
 		} catch (Exception e) {
+
 			System.out.println(
-					(char) 27 + "[31;1mMiddleware exception: " + (char) 27 + "[0mUncaught exception " + e.toString());
+					(char) 27 + "[31;1mMiddleware exception:3 " + (char) 27 + "[0mUncaught exception " + e.toString());
 			e.printStackTrace(); 
 		}
 		return "";

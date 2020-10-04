@@ -27,10 +27,10 @@ public class RMIMiddleware extends ResourceManager
     private static String m_serverName ="Middleware";
     private static String m_rmiPrefix = "group_24_";
 
-    private static int middleware_port = 3024;
-    private static int server_port_car = 3124; 
-    private static int server_port_room = 3224;
-    private static int server_port_flight = 3324;
+    private static int middleware_port = 30024;
+    private static int server_port_car = 31124; 
+    private static int server_port_room = 32224;
+    private static int server_port_flight = 33324;
 	private static String serverHost_Car;
 	private static String serverHost_Room;
 	private static String serverHost_Flight;
@@ -50,6 +50,7 @@ public class RMIMiddleware extends ResourceManager
 
 	public static void main(String args[])
 	{
+	
 		if (args.length > 0)
 		{
 			serverHost_Car=args[1];
@@ -69,9 +70,9 @@ public class RMIMiddleware extends ResourceManager
 			// Bind the remote object's stub in the registry
 			Registry l_registry;
 			try {
-				l_registry = LocateRegistry.createRegistry(3024);
+				l_registry = LocateRegistry.createRegistry(30024);
 			} catch (RemoteException e) {
-				l_registry = LocateRegistry.getRegistry(3024);
+				l_registry = LocateRegistry.getRegistry(30024);
 			}
 			final Registry registry = l_registry;
 			registry.rebind(s_rmiPrefix + s_serverName, resourceManager);
@@ -184,8 +185,8 @@ public class RMIMiddleware extends ResourceManager
 
   @Override
   public String queryCustomerInfo(int id, int customerID) throws RemoteException {
-    return flightRM.queryCustomerInfo(id, customerID)
-        + carRM.queryCustomerInfo(id, customerID).split("\n", 2)[1] + roomRM.queryCustomerInfo(id, customerID).split("\n", 2)[1];
+    return flightRM.queryCustomerInfo(id, customerID).replaceAll("!!","\n")
+        + carRM.queryCustomerInfo(id, customerID).replaceAll("!!","\n").split("\n", 2)[1] + roomRM.queryCustomerInfo(id, customerID).replaceAll("!!","\n").split("\n", 2)[1];
   }
 
   @Override

@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 public class TCPClient extends Client{
 
     private static String s_serverHost = "localhost";
-    private static int s_serverPort = 3024;
+    private static int s_serverPort = 30024;
     private static String s_serverName = "Server";
 
     // TODO: ADD YOUR GROUP NUMBER TO COMPILE
@@ -31,6 +31,7 @@ public class TCPClient extends Client{
 
     public static void main(String args[]) throws IOException {
         if (args.length > 0) {
+           //  System.err.println(s_serverHost);
             s_serverHost = args[0];
         }
         if (args.length > 1) {
@@ -345,22 +346,24 @@ public class TCPClient extends Client{
         // receive the server's result via the input stream from the server
         // establish a new connection before finishing
         outToServer.println(input);
-        String line = inFromServer.readLine();
+        String line = inFromServer.readLine().replaceAll("!!","\n");
         String res = "";
         res = line;
-//        while (line != null) {
-//            System.out.println(line);
-//            if (res.length() == 0)
-//                res = line;
-//            else
-//                res = "\n" + line;
-//        }
+    //    while (line != null) {
+    //        System.out.println(line);
+    //        if (res.length() == 0)
+    //            res = line;
+    //        else
+    //            res = "\n" + line;
+
+    //         inFromServer.readLine();
+    //    }
         try{
              connectServer();
         }catch(Exception e){
           e.printStackTrace();
         }
-        System.out.println("result: " + res); // print the server result to the user
+        // System.out.println("result: " + res); // print the server result to the user
         boolean success = false;
         try {
             if (res.length() > 0) {
