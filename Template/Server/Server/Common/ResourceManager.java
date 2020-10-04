@@ -385,7 +385,6 @@ public class ResourceManager implements IResourceManager
 	public HashMap<Integer,String> getReserved (int xid) throws RemoteException {
 		HashMap<Integer,String> m = new HashMap<Integer,String>();
 		String summary = "";
-		m_data.dump();
 		for (String key: m_data.keySet()) {
 			String type = key.split("-")[0];
 			System.out.println(type);
@@ -395,7 +394,6 @@ public class ResourceManager implements IResourceManager
 			int cid = customer.getID();
 			String temp = customer.getSummary();
 			m.put(cid, temp);
-
 		}
 		return m;
 	}
