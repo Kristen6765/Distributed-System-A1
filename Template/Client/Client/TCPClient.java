@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 
 public class TCPClient extends Client{
 
-    private static String s_serverHost = "localhost";
+    private static String s_serverHost = "lab2-10";
     private static int s_serverPort = 30024;
     private static String s_serverName = "Server";
 
@@ -329,10 +329,10 @@ public class TCPClient extends Client{
                     break;
                 }
                 case Summary: {
-                    checkcheckArgumentsCount(1, arguments.size());
+                    checkArgumentsCount(2, arguments.size());
                     System.out.println("Get summary of resources and clients [xid="  + arguments.elementAt(1) + "]");
                     int id = toInt(arguments.elementAt(1));
-                    process(arguments.toString(), "Report Generated", "Report Cannot be Generated", "STRING");
+                    process(arguments.toString(), "Report Generated", "Report Cannot be Generated", "STR");
                     break;
                 }
 

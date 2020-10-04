@@ -7,7 +7,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
+import java.util.HashMap;
 import Server.Common.*;
 
 public class TCPResourceManager extends ResourceManager {
@@ -215,11 +215,12 @@ public class TCPResourceManager extends ResourceManager {
 
                 }
                 case "summary": {
-                int xid = Integer.parseInt(command.get(1));
-                HashMap<Integer, String> reservedItems = manager.reservedItems(xid);
-                return reservedItems.toString();
+                	int xid = Integer.parseInt(command.get(1));
+                	HashMap<Integer, String> reservedItems = manager.getReserved(xid);
+                	return reservedItems.toString();
 
-            }
+            	}
+	    }
         } catch(Exception e) {
             System.err.println((char)27 + "[31;1mExecution exception: " + (char)27 + "[0m" + e.getLocalizedMessage());
         }
