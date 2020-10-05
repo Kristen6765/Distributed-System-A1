@@ -43,11 +43,6 @@ public class TCPClient extends Client{
             System.exit(1);
         }
 
-        // Set the security policy
-//        if (System.getSecurityManager() == null) {
-////            System.setSecurityManager(new SecurityManager());
-////        }
-
         try {
             TCPClient client = new TCPClient();
             client.connectServer();
@@ -57,35 +52,6 @@ public class TCPClient extends Client{
             e.printStackTrace();
             System.exit(1);
         }
-
-        // String serverName=args[0];
-
-        // Socket socket= new Socket(serverName, 9090); // establish a socket with a
-        // server using the given port#
-
-        // PrintWriter outToServer= new PrintWriter(socket.getOutputStream(),true); //
-        // open an output stream to the server...
-        // BufferedReader inFromServer = new BufferedReader(new
-        // InputStreamReader(socket.getInputStream())); // open an input stream from the
-        // server...
-
-        // BufferedReader bufferedReader =new java.io.BufferedReader(new
-        // InputStreamReader(System.in)); //to read user's input
-
-        // while(true) // works forever
-        // {
-        // String readerInput=bufferedReader.readLine(); // read user's input
-        // if(readerInput.equals("quit"))
-        // break;
-
-        // outToServer.println(readerInput); // send the user's input via the output
-        // stream to the server
-        // String res=inFromServer.readLine(); // receive the server's result via the
-        // input stream from the server
-        // System.out.println("result: "+res); // print the server result to the user
-        // }
-
-        // socket.close();
     }
 
     @Override
